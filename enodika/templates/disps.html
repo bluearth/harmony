@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script type="text/javascript">
+function discard_selected(){
+	if (confirm("Anda yakin akan menghapus konsep-konsep ini?")){
+		document.forms.draftlist.action = "/enodika/dispo/delmany";
+		document.forms.draftlist.submit();
+	}
+}
+</script>
+
+{% if action_result_msgs %}
+<div class="success">
+<ul>
+	{% for msg in action_result_msgs %}
+	<li>{{ msg.description }}</li>
+	{% endfor %}
+</ul>
+</div>
+<br/>
+{% endif %} 
+
+
+<h1>Surat masuk</h1>
+<hr/>
+
+<form name="dispolist" method="post">
+<p><input name="delBtn" value="Hapus yang dipilih" type="button" onclick="javascript:discard_selected()"/></p>
+
+<table width="100%">
+	<thead>
+	<tr>
+		<td><input name="deleteAll" type="checkbox" unchecked></td>
+		<td><a href="/enodika/dispo/authdate">Tanggal terima</a></td>
+		<td><a href="/enodika/dispo/authdate">Dari</a></td>
+		<td><a href="/enodika/dispo/subject">Perihal<a/></td>
+		<td>Isi</td>
+	</tr>
+	</thead>
+	<tbody>
+	{% for dispo in dispos %}
+	<tr>
+		<td><input name="delete-{{ draft.id }}" type="checkbox" unchecked></td>
+		<td>{{ dispo.dispatch_date }}</td>
+		<td>{{ dispo.initiator }}</td>
+		<td><a href="/enodika/dispos/view/{{ dispo.id }}">{{ dispo.nota.subject|truncatewords:5 }}</a></td>
+		<td>{{ dispo.nota.content|removetags:"b i u a span strong em p script"|truncatewords:10 }}</td>
+	</tr>
+	{% empty %}
+	<tr><td colspan="4">Tidak ada surat masuk untuk saat ini.</td></tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+<p><input name="delBtn" value="Hapus yang dipilih" type="button" onclick="javascript:discard_selected()"/></p>
+
+</form>
+
+{% endblock %}
+

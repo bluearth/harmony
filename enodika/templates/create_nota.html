@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="/enodika/asset/js/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="/enodika/asset/js/jquery/jquery-1.4.2.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	/*
+	$(".watchForChange").keyup(function(evt){
+		var subject = document.forms.editor.subjectTxt.value;
+		var serialno = document.forms.editor.serialNoTxt.value;
+		//content is controlled from tinyMCE
+		var content = document.forms.editor.contentTxa.value;
+		var recipients = document.forms.editor.recipientList.value;
+		
+		
+		if ((jQuery.trim(subject).length > 0) || (jQuery.trim(serialno).length > 0) ||
+				(jQuery.trim(content).length > 0) ){			
+			$("input[name='saveBtn']").attr("disabled","");
+		}else{
+			$("input[name='saveBtn']").attr("disabled","disabled");
+		}
+		
+		if ((jQuery.trim(recipients).length > 0) && (jQuery.trim(content).length > 0)) {
+			$("input[name='sendBtn']").attr("disabled","");
+		}else{
+			$("input[name='sendBtn']").attr("disabled","disabled");
+		}		
+		
+	});
+	*/
+/*
+	$("#recList").keyup(function(evt){
+		var recListStr = $("input[name='recipientList']").val().trim();
+		if (recListStr.length > 2){
+			$("#recSuggest").html("");
+			var tokens = recListStr.trim().split(",");
+			var listStr = "";
+
+			for (var i = 0 ; i < tokens.length ; i++){
+				listStr += tokens[i]+", ";
+			}
+
+			$("#recSuggest").html(listStr);
+		}else{
+			$("#recSuggest").html("");
+		}
+	});
+*/
+});
+
+tinyMCE.init({
+	mode : 'exact',
+	elements : 'contentTxa',
+	width : '420',
+	theme : 'advanced',
+	plugins : 'safari,style,table,inlinepopups,contextmenu,paste,template',
+	theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,outdent,indent,blockquote,|,cut,copy,paste,pastetext,pasteword',	
+	theme_advanced_buttons2 : 'styleselect,formatselect,fontselect,fontsizeselect',
+	theme_advanced_buttons3 : 'tablecontrols',
+	theme_advanced_toolbar_location : 'top',
+	theme_advanced_statusbar_location : 'bottom',			
+	theme_advanced_toolbar_align : 'left',		
+	theme_advanced_resizing : true
+		
+});
+
+function send_draft(){
+	document.forms.editor.action = "/enodika/send";
+	document.forms.editor.submit();
+}
+function save_draft(){
+	
+		
+	document.forms.editor.action = "/enodika/savedraft";
+	document.forms.editor.submit();
+}
+function abandon_edit(){
+	var subject = document.forms.editor.subjectTxt.value;
+	var serialno = document.forms.editor.serialNoTxt.value;
+	var content = document.forms.editor.contentTxa.value;
+	
+	document.forms.editor.action = "/enodika/abandonedit";
+	document.forms.editor.submit();
+}
+
+</script>
+{% endblock header_scripts %}
+
+{% block content %}
+{% if action_result_msgs %}
+<div class="error">
+<ul>
+	{% for msg in action_result_msgs %}
+	<li>{{ msg }}</li>
+	{% endfor %}
+</ul>
+</div>
+<br/>
+{% endif %} 
+
+<form name="editor" method="post">
+<!-- top actions -->
+<p><input name="sendBtn" value="Kirim" type="button" enable onclick="javascript:send_draft()"/>
+<input name="saveBtn" value="Simpan draft" type="button" enable onclick="javascript:save_draft()"/>
+<input name="abandonBtn" value="Buang" type="button" onclick="javascript:abandon_edit()"/></p>
+<!-- -->
+
+<input type="hidden" name="notaId" value="{{ nota.id }}"/>
+
+<label for="recipientList">Kepada</label> <span style="small quiet">(pisahkan nama dengan tanda koma)</span><br/>
+<input name="recipientList" id="recList" type="text" value="{{ nota.recipients }}" size="50" class="watchForChange"/><br/>
+
+
+<label for="ccRecipientList">Tembusan</label> <span style="small quiet">(pisahkan nama dengan tanda koma)</span><br/>
+<input name="ccRecipientList" type="text" value="{{ nota.ccrecipients }}" size="50" class="watchForChange"/><br/>
+
+
+<label for="subjectTxt">Perihal</label><br/>
+<input name="subjectTxt" value="{{ nota.subject }}" type="text" size="50" class="watchForChange"/><br/>
+
+<label for="serialNoTxt">Nomor nota</label><br/>
+<input name="serialNoTxt" value="{{ nota.serialno }}" type="text" size="50" class="watchForChange"/><br/>
+
+<label for="contentTxa">Isi nota</label><br/>
+<textarea name="contentTxa" class="watchForChange">{{ nota.content }}</textarea><br/>
+
+<!-- bottom actions -->
+<p><input name="sendBtn" value="Kirim" type="button"  onclick="javascript:send_draft()"/>
+<input name="saveBtn" value="Simpan draft" type="button" onclick="javascript:save_draft()"/>
+<input name="abandonBtn" value="Buang" type="button" onclick="javascript:abandon_edit()"/></p>
+<!-- -->
+
+</form>
+{% endblock content %}

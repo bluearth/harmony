@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="/enodika/asset/js/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="/enodika/asset/js/jquery/jquery-1.4.2.js"></script>
+<script type="text/javascript">
+tinyMCE.init({
+	mode : 'exact',
+	elements : 'commentTxa',
+	width : '420',
+	height : '100',
+	theme : 'simple'
+});
+function forward_dispo(){
+	document.forms.dispoComment.action = "/enodika/forward/{{ dispo.id }}";
+	document.forms.dispoComment.submit();
+}
+function not_avail(){
+	document.forms.dispoComment.action = "/enodika/notavail";
+	document.forms.dispoComment.submit();
+}
+</script>
+{% endblock header_scripts %}
+
+{% block content %}
+
+<h1>Nota Dinas</h1>
+<hr/>
+
+<p class="box">
+<input name="previewBtn" value="Pratayang" type="button" onclick="javascript:not_avail()"/>
+<input name="downloadBtn" value="Unduh" type="button" onclick="javascript:not_avail()"/>
+<input name="closeBtn" value="Tutup" type="button" onclick="javascript:not_avail()"/>
+</span></p>
+
+<form name="dispoComment" method="post">
+
+<div class="notaDinasBody" style="font-family:times;border-top:1px solid #ababab;border-left:1px solid #ababab;
+	border-bottom:1px solid black;border-right:1px solid black;padding:10px">
+	<img src="/enodika/asset/images/logo/company_logo_64.png" style="float:right"/>
+	<h1>PT Kereta Api Indonesia</h1>
+	<h3>Nota Internal</h3>
+	
+	{% if dispo.forwarded_from %}{% if dispo.forwarded_from.comment %}	
+	<div class="commentBody" style="background:rgb(245,247,40);width:50%">
+		<img src="/enodika/asset/images/dogear_yellow_tr.png" style="float:right"/>
+		<div style="padding:1em;padding-bottom:1px">
+			<strong>Dari </strong>{{ dispo.initiator }} <strong>kepada</strong> </br> 
+			{{ dispo.forwarded_from.comment|removetags:"html head body a script iframe"|safe  }}
+		</div>
+	</div><br/>
+	{% endif %}{% endif %}	
+	
+	<hr/>
+	<p><strong class="span-2">Tanggal</strong> {{ dispo.nota.create_date }}<br/>
+	<strong class="span-2">Perihal</strong> {{ dispo.nota.subject }}<br/>
+	<strong class="span-2">Nomor</strong> {{ dispo.nota.serialno }}<br/>
+	<strong class="span-2">Dari</strong> {{ dispo.initiator }}<br/>				
+	<strong class="span-2">Kepada</strong><br/>
+	<ol>
+	{% for recipient in recipients %}	
+		<li>{% ifequal user.username recipient.username%}
+			<strong>{{ recipient.first_name }} {{ recipient.last_name }}</strong>
+			{% else %}
+			{{ recipient.first_name }} {{ recipient.last_name }}
+			{% endifequal %}
+		</li>	
+	{% endfor %}
+	</ol>
+	</p>
+	<br/>
+	</br>
+	{{ dispo.nota.content|removetags:"html head body a script iframe"|safe }}
+	<br/>
+	<br/>
+	<hr/>
+	<p><strong>Tembusan : </strong> 
+	<ol>
+	{% for cc_recipient in cc_recipients %}	
+		<li>{{ cc_recipient }}</li>	
+	{% endfor %}
+	</ol>
+	<strong>Lampiran : </strong> 
+	<ol>
+	{% for attachment in attachments %}	
+		<li>{{ cc_recipient }}</li>	
+	{% endfor %}
+	</ol>	
+	</p>
+	
+</div>
+<br/>
+<!-- actions -->
+
+<label>Tindakan Anda</label>
+<hr/>
+<input name="readBtn" type="checkbox"/><label for="readBtn">Sudah dibaca</label>
+<input name="finishedBtn" type="checkbox"/><label for="finishedBtn">Sudah diproses</label>
+<input name="approveBtn" type="radio"/><label for="approveBtn">Disetujui</label>
+<input name="approveBtn" type="radio"/><label for="approveBtn">Ditolak</label>
+<br/><br/>
+<label for="commentTxa">Komentar balasan / terusan</label><br/>
+<textarea name="commentTxa" value="" type="button" rows="3" cols="20"></textarea><br/>
+<label for="recipientList">Teruskan kepada (pisahkan dengan koma)</label><br/>
+<input name="recipientList" id="recList" type="text" value="{{ nota.recipients }}" size="35"/>
+<input name="forwardBtn" value="Teruskan" type="button" onclick="javascript:forward_dispo()"/> <br/>
+<!-- actions -->
+</form>
+<br/>
+<br/>
+{% endblock %}
+

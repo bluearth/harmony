@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if action_result_msgs %}
+<div class="success">
+<ul>
+	{% for msg in action_result_msgs %}
+	<li>{{ msg.description }}</li>
+	{% endfor %}
+</ul>
+</div>
+<br/>
+{% endif %} 
+{% endblock %}

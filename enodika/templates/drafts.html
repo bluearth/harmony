@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block header_scripts %}
+<script type="text/javascript">
+function discard_selected(){
+	if (confirm("Anda yakin akan menghapus konsep-konsep ini?")){
+		document.forms.draftlist.action = "/enodika/drafts/delmany";
+		document.forms.draftlist.submit();
+	}
+}
+function not_avail(){
+	document.forms.draftlist.action = "/enodika/notavail";
+	document.forms.draftlist.submit();
+}
+</script>
+{% endblock %}
+
+{% block content %}
+{% if action_result_msgs %}
+<div class="success">
+<ul>
+	{% for msg in action_result_msgs %}
+	<li>{{ msg.description }}</li>
+	{% endfor %}
+</ul>
+</div>
+<br/>
+{% endif %} 
+
+
+<h1>Draft nota</h1>
+<hr/>
+
+<form name="draftlist" method="post">
+<p><input name="delBtn" value="Hapus yang dipilih" type="button"  onclick="javascript:not_avail()"/></p>
+
+<table width="100%">
+	<thead>
+	<tr>
+		<td><input name="deleteAll" type="checkbox" unchecked></td>
+		<td><a href="/enodika/drafts/authdate">Tanggal buat</a></td>
+		<td><a href="/enodika/drafts/subject">Perihal<a/></td>
+		<td>Isi Nota</td>	
+	</tr>
+	</thead>
+	<tbody>
+	{% for draft in drafts %}
+	<tr>
+		<td><input name="delete-{{ draft.id }}" type="checkbox" unchecked></td>
+		<td>{{ draft.nota.create_date }}</td>
+		<td>
+			<a href="/enodika/editnota/{{ draft.nota.id }}">
+				{% if draft.nota.subject %}
+				{{ draft.nota.subject|truncatewords:5 }}
+				{% else %}
+				(tanpa perihal)
+				{% endif %}
+			</a>
+		</td>
+		<td>{{ draft.nota.content|removetags:"b i u a span strong em p script sup sub"|truncatewords:10 }}</td>
+	</tr>
+	{% empty %}
+	<tr><td colspan="4">Tidak ada draft nota tersimpan. <a href="/enodika/createnota">Buat nota</a>.</td></tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+<p><input name="delBtn" value="Hapus yang dipilih" type="button"  onclick="javascript:not_avail()"/></p>
+
+</form>
+
+{% endblock %}
+

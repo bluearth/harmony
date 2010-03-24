@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>eNodika - Login</title>
+	<link rel="stylesheet" href="/enodika/asset/css/bp/screen.css" type="text/css" media="screen, projection">
+</head>
+<body>
+<form method="post" action="{% url django.contrib.auth.views.login %}">
+<br/><br/>
+<div id="container" style="text-align:center;border:'1px,solid,grey';">
+	<div class="box"">
+	<img src="/enodika/asset/images/logo/company_banner.jpg"/>
+	<h2>eNodika</h2>
+	{% if form.errors %}
+	<div class="error">Username dan password tidak sesuai. Silahkan coba lagi.</div>
+	{% endif %}
+		
+	<p>{{ form.username.label_tag }}<br/>
+	{{ form.username }}</p>
+	
+	<p>{{ form.password.label_tag }}<br/>
+	{{ form.password }}</p>
+	
+	<input type="submit" value="login" />
+	<input type="hidden" name="next" value="{{ next }}" />
+</div>
+
+</form>
+</body>
+</html>
+
